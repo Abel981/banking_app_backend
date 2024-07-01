@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { SignupDTO } from './dtos/signup.dto';
 
 @Injectable()
 export class AuthService {
@@ -25,7 +26,11 @@ export class AuthService {
     };
   }
 
-  getSecretKey(): string {
-    return this.configService.get('SECRET_KEY'); // read environment variable
+  async signUp(signUpDto: SignupDTO): Promise<{ id: string }> {
+    const user = await this.usersService.createUser(signUpDto);
+
+    return {
+      id: user.id,
+    };
   }
 }

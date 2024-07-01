@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { SignupDTO } from 'src/auth/dtos/signup.dto';
 
 // This should be a real class/interface representing a user entity
 export type User = any;
@@ -7,12 +8,12 @@ export type User = any;
 export class UsersService {
   private readonly users = [
     {
-      userId: 1,
+      id: 1,
       username: 'john',
       password: 'changeme',
     },
     {
-      userId: 2,
+      id: 2,
       username: 'maria',
       password: 'guess',
     },
@@ -20,5 +21,8 @@ export class UsersService {
 
   async findOne(username: string): Promise<User | undefined> {
     return this.users.find((user) => user.username === username);
+  }
+  async createUser(signupDTO: SignupDTO): Promise<any> {
+    return this.users[0];
   }
 }
