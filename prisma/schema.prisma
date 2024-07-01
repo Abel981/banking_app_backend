@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                       Int       @id @default(autoincrement())
+  email                    String    @unique
+  passwordHash             String
+  firstName                String
+  lastName                 String
+  phone String
+  stripeCustomerId         String?   @unique
+  needsPercentage   Int       @default(50)
+  wantsPercentage   Int       @default(30)
+  savingsPercentage Int       @default(20)
+  savingGoal SavingGoal[]
+  createdAt                DateTime  @default(now())
+  transactions             Transaction[]
+  bills Bill[]
+  netBudgets                  Int?
+
+}
+
+model Bill {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  amount      Float
+  dueDate     DateTime
+  description String?
+  paid        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model SavingGoal {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  goalAmount    Float
+  completionDate DateTime
+  createdAt     DateTime @default(now())
+  status SavingGoalStatus @default(pending)
+  user          User     @relation(fields: [userId], references: [id])
+}
+
+model Transaction {
+  id                  Int      @id @default(autoincrement())
+  userId              Int
+  amount              Float
+  category            String
+  type                String
+  description         String?
+  externalTransactionId String? @unique
+  transactionDate     DateTime @default(now())
+  user                User     @relation(fields: [userId], references: [id])
+}
+
+
+enum SavingGoalStatus {
+  pending
+  complete
+  incomplete
+}
