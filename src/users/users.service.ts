@@ -20,11 +20,20 @@ export class UsersService {
     },
   ];
 
-  async findOne(email: string): Promise<User | undefined> {
+  async findOne(id: string): Promise<User | undefined> {
+    return this.prisma.user.findFirst({ where: { id } });
+  }
+  async findOneByEmail(email: string): Promise<User | undefined> {
     return this.prisma.user.findFirst({ where: { email } });
   }
 
   async createUser(payload: any): Promise<any> {
-    return this.prisma.user.create({data:{...payload}});
+    return this.prisma.user.create({ data: { ...payload } });
+  }
+  async addStripeCustomerId(id: string, customerId: string) {
+    return this.prisma.user.update({
+      where: { id },
+      data: { stripeCustomerId: customerId },
+    });
   }
 }

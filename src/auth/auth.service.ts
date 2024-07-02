@@ -33,7 +33,7 @@ export class AuthService {
   //   }
   saltOrRounds: number = 10;
   async signIn(signInDto: SignInDTO): Promise<{ access_token: string }> {
-    const user = await this.usersService.findOne(signInDto.email);
+    const user = await this.usersService.findOneByEmail(signInDto.email);
     if (!user) throw new UnauthorizedException();
     const isMatch = await bcrypt.compare(signInDto.password, user.passwordHash);
     if (!isMatch) throw new UnauthorizedException();
@@ -47,15 +47,16 @@ export class AuthService {
     };
   }
 
-  async signUp({password, confirmPassword, ...payload}: SignupDTO): Promise<{ id: number }> {
-    const user = await this.usersService.findOne(payload.email);
+  async signUp({
+    password,
+    confirmPassword,
+    ...payload
+  }: SignupDTO): Promise<{ id: number }> {
+    const user = await this.usersService.findOneByEmail(payload.email);
     if (user) throw new ConflictException();
-    const hashedPassword = await bcrypt.hash(
-      password,
-      this.saltOrRounds,
-    );
+    const hashedPassword = await bcrypt.hash(password, this.saltOrRounds);
 
-    let data = {
+    const data = {
       ...payload,
       passwordHash: hashedPassword,
     };
@@ -63,7 +64,7 @@ export class AuthService {
     const createdUser = await this.usersService.createUser(data);
 
     return {
-      id: createdUser.id
+      id: createdUser.id,
     };
   }
 }

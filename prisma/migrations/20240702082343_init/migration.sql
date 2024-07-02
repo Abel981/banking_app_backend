@@ -3,7 +3,7 @@ CREATE TYPE "SavingGoalStatus" AS ENUM ('pending', 'complete', 'incomplete');
 
 -- CreateTable
 CREATE TABLE "User" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "passwordHash" TEXT NOT NULL,
     "firstName" TEXT NOT NULL,
@@ -14,15 +14,15 @@ CREATE TABLE "User" (
     "wantsPercentage" INTEGER NOT NULL DEFAULT 30,
     "savingsPercentage" INTEGER NOT NULL DEFAULT 20,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "netBudgets" INTEGER NOT NULL,
+    "netBudgets" INTEGER,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Bill" (
-    "id" SERIAL NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
     "dueDate" TIMESTAMP(3) NOT NULL,
     "description" TEXT,
@@ -34,8 +34,8 @@ CREATE TABLE "Bill" (
 
 -- CreateTable
 CREATE TABLE "SavingGoal" (
-    "id" SERIAL NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
     "goalAmount" DOUBLE PRECISION NOT NULL,
     "completionDate" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -46,8 +46,8 @@ CREATE TABLE "SavingGoal" (
 
 -- CreateTable
 CREATE TABLE "Transaction" (
-    "id" SERIAL NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
     "category" TEXT NOT NULL,
     "type" TEXT NOT NULL,
