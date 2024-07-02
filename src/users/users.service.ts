@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
 
@@ -35,5 +35,22 @@ export class UsersService {
       where: { id },
       data: { stripeCustomerId: customerId },
     });
+  }
+  async saveAccount(accounts: any[], userId: string) {
+    const accountIds = accounts.map((account) => account.accountId);
+    try {
+      const user = await this.prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          accountIds: {
+            set: accountIds, // This replaces the current accountIds with the new ones
+          },
+        },
+      });
+    } catch {
+      throw new InternalServerErrorException();
+    }
   }
 }

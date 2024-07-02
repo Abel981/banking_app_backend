@@ -1,16 +1,19 @@
 import { Controller, Get, Param, Post } from '@nestjs/common';
 import { StripeService } from './stripe.service';
+import { Public } from 'src/decorators/public.decorator';
 
 @Controller('api/stripe')
 export class StripeController {
   constructor(private stripeService: StripeService) {}
-  @Get('customer:id')
+  @Public()
+  @Get('customer/:id')
   async retriveCustomerDetails(@Param('id') id: string) {
     return await this.stripeService.retriveCustomer(id);
   }
-
-  @Post('connect-account')
-  async connectBankAccount(email: string) {
-    return await this.stripeService.linkBankAccount(email);
+  @Public()
+  @Post('connect-account/:id')
+  async connectBankAccount(@Param('id') id: string) {
+    console.log(id);
+    return await this.stripeService.linkBankAccount(id);
   }
 }
