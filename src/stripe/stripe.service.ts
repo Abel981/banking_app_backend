@@ -27,13 +27,21 @@ export class StripeService {
     }
   }
 
-  async getAccountTransaction(accountId: string) {
-    return await this.stripe.financialConnections.transactions.list({
+  async getAccountTransaction(
+    accountId: string,
+    startingAfter: string | null = null,
+  ) {
+    const params: any = {
       account: accountId,
-    });
+      limit: 10,
+      ...(startingAfter && { starting_after: startingAfter }), // Conditionally include starting_after
+    };
+    return await this.stripe.financialConnections.transactions.list(params);
   }
 
-  async linkBankAccount(id: string): Promise<string> {
+  async linkBankAccount(
+    id: string,
+  ): Promise<Stripe.Response<Stripe.FinancialConnections.Session>> {
     try {
       const user = await this.usersService.findOne(id);
 
@@ -58,7 +66,7 @@ export class StripeService {
         ],
       });
       console.log('h3', session);
-      return session.client_secret;
+      return session;
     } catch {
       throw new InternalServerErrorException();
     }

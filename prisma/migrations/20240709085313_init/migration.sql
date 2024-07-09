@@ -1,6 +1,9 @@
 -- CreateEnum
 CREATE TYPE "SavingGoalStatus" AS ENUM ('pending', 'complete', 'incomplete');
 
+-- CreateEnum
+CREATE TYPE "ExpenseType" AS ENUM ('needs', 'wants');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
@@ -8,13 +11,13 @@ CREATE TABLE "User" (
     "passwordHash" TEXT NOT NULL,
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
-    "phone" TEXT NOT NULL,
-    "stripeCustomerId" TEXT,
     "needsPercentage" INTEGER NOT NULL DEFAULT 50,
     "wantsPercentage" INTEGER NOT NULL DEFAULT 30,
     "savingsPercentage" INTEGER NOT NULL DEFAULT 20,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "netBudgets" INTEGER,
+    "netBudgets" INTEGER NOT NULL DEFAULT 1200,
+    "accountsId" TEXT[],
+    "stripeCustomerId" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -23,9 +26,10 @@ CREATE TABLE "User" (
 CREATE TABLE "Bill" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "type" "ExpenseType" NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
     "dueDate" TIMESTAMP(3) NOT NULL,
-    "description" TEXT,
     "paid" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -49,10 +53,9 @@ CREATE TABLE "Transaction" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
+    "name" TEXT NOT NULL,
     "category" TEXT NOT NULL,
     "type" TEXT NOT NULL,
-    "description" TEXT,
-    "externalTransactionId" TEXT,
     "transactionDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Transaction_pkey" PRIMARY KEY ("id")
@@ -60,12 +63,6 @@ CREATE TABLE "Transaction" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
-
--- CreateIndex
-CREATE UNIQUE INDEX "User_stripeCustomerId_key" ON "User"("stripeCustomerId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Transaction_externalTransactionId_key" ON "Transaction"("externalTransactionId");
 
 -- AddForeignKey
 ALTER TABLE "Bill" ADD CONSTRAINT "Bill_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

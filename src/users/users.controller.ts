@@ -1,10 +1,34 @@
-import { Controller, Get, Req } from '@nestjs/common';
-import { Request } from 'express';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { UsersService } from './users.service';
+import { Public } from 'src/decorators/public.decorator';
 
 @Controller('/api/users')
 export class UsersController {
-  @Get('/sign-in')
-  signIn(@Req() request: Request): string {
-    return 'hey sign in';
+  constructor(private userService: UsersService) {}
+  @Get('/transactions')
+  getTransactions(@Query() query: any) {
+    const { page, perPage } = query;
+
+    return this.userService.findTransactions({
+      orderBy: {
+        transactionDate: 'desc',
+      },
+      page,
+      perPage,
+    });
+  }
+
+  @Get('/:id')
+  getUserById(@Param('id') id: string) {
+    return this.userService.findOne(id);
+  }
+  @Public()
+  @Post('/add-accounts/:id')
+  addAccounts(
+    @Param('id') id: string,
+    @Body() addAccountDto: { accountIds: string[] },
+  ) {
+    console.log(addAccountDto);
+    this.userService.saveAccount(addAccountDto.accountIds, id);
   }
 }

@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { SignupDTO } from './dtos/signup.dto';
 import { SignInDTO } from './dtos/signin.dto';
 import * as bcrypt from 'bcrypt';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -47,11 +48,7 @@ export class AuthService {
     };
   }
 
-  async signUp({
-    password,
-    confirmPassword,
-    ...payload
-  }: SignupDTO): Promise<{ id: number }> {
+  async signUp({ password, ...payload }: SignupDTO): Promise<User> {
     const user = await this.usersService.findOneByEmail(payload.email);
     if (user) throw new ConflictException();
     const hashedPassword = await bcrypt.hash(password, this.saltOrRounds);
@@ -62,9 +59,8 @@ export class AuthService {
     };
 
     const createdUser = await this.usersService.createUser(data);
-
-    return {
-      id: createdUser.id,
-    };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { passwordHash, ...userWithOutPassword } = createdUser;
+    return userWithOutPassword;
   }
 }

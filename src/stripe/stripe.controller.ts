@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post } from '@nestjs/common';
+import { Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { StripeService } from './stripe.service';
 import { Public } from 'src/decorators/public.decorator';
 
@@ -15,5 +15,17 @@ export class StripeController {
   async connectBankAccount(@Param('id') id: string) {
     console.log(id);
     return await this.stripeService.linkBankAccount(id);
+  }
+
+  @Public()
+  @Get('transactions/:accountId')
+  async retriveTransactions(
+    @Param('accountId') accountId: string,
+    @Query('starting_after') startingAfter: string,
+  ) {
+    return await this.stripeService.getAccountTransaction(
+      accountId,
+      startingAfter,
+    );
   }
 }

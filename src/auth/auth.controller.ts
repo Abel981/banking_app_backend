@@ -11,6 +11,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   signIn(@Body() signInDto: SignInDTO) {
+    console.log(signInDto);
     return this.authService.signIn(signInDto);
   }
 
@@ -18,6 +19,7 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   @Post('signup')
   signUp(@Body() signupDto: SignupDTO) {
+    console.log('hey');
     return this.authService.signUp(signupDto);
   }
 }

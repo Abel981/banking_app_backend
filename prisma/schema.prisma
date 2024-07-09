@@ -19,8 +19,6 @@ model User {
   passwordHash             String
   firstName                String
   lastName                 String
-  phone String
-  stripeCustomerId         String?   @unique
   needsPercentage   Int       @default(50)
   wantsPercentage   Int       @default(30)
   savingsPercentage Int       @default(20)
@@ -28,17 +26,19 @@ model User {
   createdAt                DateTime  @default(now())
   transactions             Transaction[]
   bills Bill[]
-  netBudgets                  Int?
-  accountId String[]
+  netBudgets                  Int @default(1200)
+  accountsId String[]
+  stripeCustomerId String?
 
 }
 
 model Bill {
   id          String @id @default(uuid())
   userId      String
+  name String
+  type ExpenseType
   amount      Float
   dueDate     DateTime
-  description String?
   paid        Boolean  @default(false)
   createdAt   DateTime @default(now())
   user        User     @relation(fields: [userId], references: [id])
@@ -58,10 +58,9 @@ model Transaction {
   id                 String @id @default(uuid())
   userId              String
   amount              Float
+  name String
   category            String
   type                String
-  description         String?
-  externalTransactionId String? @unique
   transactionDate     DateTime @default(now())
   user                User     @relation(fields: [userId], references: [id])
 }
@@ -71,4 +70,9 @@ enum SavingGoalStatus {
   pending
   complete
   incomplete
+}
+
+enum ExpenseType {
+  needs
+  wants
 }
